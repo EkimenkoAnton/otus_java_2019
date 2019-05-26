@@ -30,7 +30,10 @@ public class AnnotationProcessor {
             for (Method testMethod : testMethods) {
                 Object instance = instantiate(testedClass);
                 try {
-                    if (!callBeforeEachMethods(instance)) break;
+                    if (!callBeforeEachMethods(instance)) {
+                        System.out.println("break");
+                        break;
+                    }
                     callTest(instance, testMethod);
                 } finally {
                     callAfterEachMethods(instance);

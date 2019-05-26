@@ -44,6 +44,12 @@
                 <version>${org.junit.jupiter.junit-jupiter-engine.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${org.junit.jupiter.junit-jupiter-engine.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -2,7 +2,8 @@ package ru.otus;
 
 public class TestRunner {
     public static void main(String[] args) {
-        run(AnnotationsTest.class);
+        //run(AnnotationsTest.class);
+        run(FailedAnnotationsTest.class);
     }
 
     private static void run(Class<?> testClass) {
