@@ -1,17 +1,14 @@
 package ru.otus;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import ru.otus.annotations.AfterAll;
-import ru.otus.reflection.ReflectionHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
+
 import java.lang.reflect.Method;
 
 class AnnotationProcessorTest {
