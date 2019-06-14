@@ -11,7 +11,6 @@ public class TestedClass implements ITestedClass{
 
     }
 
-
     @Override
     @Log
     public void logPrimitiveArray(double[] arr) {

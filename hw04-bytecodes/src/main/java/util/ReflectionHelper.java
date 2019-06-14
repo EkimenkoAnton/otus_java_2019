@@ -4,7 +4,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public final class ReflectionHelper {
 
@@ -147,13 +146,9 @@ public final class ReflectionHelper {
     }
 
     private static Class<?>[] toClasses(Object[] args) {
-        return Arrays.stream(args)
-                .map(Object::getClass)
-                .toArray(Class<?>[]::new);
-//        final Class<?>[] classes = new Class<?>[args.length];
-//        for (int i = 0; i < args.length; i++) {
-//            classes[i] = args[i].getClass();
-//        }
-//        return classes;
+        final Class<?>[] classes = new Class<?>[args.length];
+        for (int i = 0; i < args.length; i++)
+            classes[i] = args[i] != null ? args[i].getClass() : null;
+        return classes;
     }
 }
