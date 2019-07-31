@@ -1,11 +1,14 @@
+package cell;
 
+import currency.Currency;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @EqualsAndHashCode(exclude = { "size" })
-public class Cell implements Comparable<Cell>{
-    private final Currency currency;
-    private int size = 0;
+public class Cell {
 
+    @Getter private final Currency currency;
+    @Getter private int size = 0;
 
     public Cell(Currency currency) {
         this.currency = currency;
@@ -14,10 +17,6 @@ public class Cell implements Comparable<Cell>{
     public Cell(Currency currency, int size) {
         this.currency = currency;
         this.size = size;
-    }
-
-    public int getCurrencyDenomination() {
-        return currency.getDenomenation();
     }
 
     public int withdraw(int count) throws Exception {
@@ -30,16 +29,4 @@ public class Cell implements Comparable<Cell>{
         size += count;
     }
 
-    public int getSize() {
-        return size;
-    }
-
-    public Currency getCurrency() {
-        return currency;
-    }
-
-    @Override
-    public int compareTo(Cell o) {
-        return getCurrencyDenomination() - o.getCurrencyDenomination();
-    }
 }
