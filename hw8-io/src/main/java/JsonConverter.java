@@ -5,15 +5,15 @@ import java.util.Map;
 public class JsonConverter {
 
     public String toJson(Object object) {
-        if(null == object)
-            return "";
         StringBuilder sb = new StringBuilder();
-        Map<String, Object> fields = ReflectionHelper.getFields(object);
-        appendObject(sb, fields);
+        appendValue(sb, object);
         return sb.toString();
     }
 
-    private <K> void appendObject(StringBuilder sb, Map<K, Object> values){
+    private void appendObject(StringBuilder sb, Object object) {
+        appendMap(sb, ReflectionHelper.getFields(object));
+    }
+    private <K> void appendMap(StringBuilder sb, Map<K, Object> values){
         int cnt = 0;
         sb.append("{");
         if (null != values) {
@@ -45,19 +45,22 @@ public class JsonConverter {
         sb.append("]");
     }
 
-    private void appendValue(StringBuilder sb, Object arg) {
-        if (((Object) arg).getClass().isArray())
-            appendArray(sb, toArray(arg));
-        else if (arg instanceof Collection)
-            appendArray(sb, ((Collection) arg).toArray());
-        else if (arg instanceof Map)
-            appendObject(sb,(Map<Object, Object>) arg);
-        else {
-            if (arg instanceof  Number)
-                sb.append(arg);
-            else
-                sb.append("\"").append(arg).append("\"");
-        }
+    private void appendValue(StringBuilder sb, Object value) {
+        if(null == value)
+            sb.append("null");
+        else if (((Object) value).getClass().isArray())
+            appendArray(sb, toArray(value));
+        else if (value instanceof Collection)
+            appendArray(sb, ((Collection) value).toArray());
+        else if (value instanceof Map)
+            appendMap(sb,(Map<Object, Object>) value);
+        else if (value instanceof  Number)
+            sb.append(value);
+        else if (value instanceof String || value instanceof Character)
+            sb.append("\"").append(value).append("\"");
+        else
+            appendObject(sb,value);
+
     }
 
     private Object[] toArray(Object val){
