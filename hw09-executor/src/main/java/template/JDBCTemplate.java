@@ -16,17 +16,19 @@ public class JDBCTemplate<T> implements Template<T> {
 
     private Connection connection;
     private final TableMetaInfo tableMetaInfo;
+    private final QueryGenerator generator;
 
-    JDBCTemplate(Connection connection, Class<T> clazz) throws Exception {
+    JDBCTemplate(Connection connection, Class<T> clazz, QueryGenerator generator) throws Exception {
         this.connection = connection;
         this.tableMetaInfo = new TableMetaInfo(clazz);
+        this.generator = generator;
         if (tableMetaInfo.getKey() == null)
             throw new Exception("Unsupported сlass");
         init();
     }
 
     private void init() throws SQLException {
-        String query = QueryGenerator.getInstance().generateCreate(
+        String query = generator.generateCreate(
                 tableMetaInfo.getName(), tableMetaInfo.getKey(), tableMetaInfo.getFieldTypes()
         );
         new ExecutorImpl(connection).update(query);
@@ -51,7 +53,7 @@ public class JDBCTemplate<T> implements Template<T> {
         Executor executor = new ExecutorImpl(connection);
         try {
             executor.update(
-                    QueryGenerator.getInstance().generateInsert(tableMetaInfo.getName(),fields.keySet()),
+                    generator.generateInsert(tableMetaInfo.getName(),fields.keySet()),
                     fields.values().toArray()
             );
         } catch (SQLException e) {
@@ -68,7 +70,7 @@ public class JDBCTemplate<T> implements Template<T> {
         Executor executor = new ExecutorImpl(connection);
         try {
             executor.update(
-                    QueryGenerator.getInstance().generateUpdate(
+                    generator.generateUpdate(
                             tableMetaInfo.getName(), tableMetaInfo.getKey(), fields.keySet()
                     ),
                     params.toArray()
@@ -98,7 +100,7 @@ public class JDBCTemplate<T> implements Template<T> {
     public <I> I load(long id, Class<I> clazz) {
 
         Executor executor = new ExecutorImpl(connection);
-        String query = QueryGenerator.getInstance().generateSelect(tableMetaInfo.getName(), tableMetaInfo.getKey());
+        String query = generator.generateSelect(tableMetaInfo.getName(), tableMetaInfo.getKey());
         Optional<I> instance = Optional.empty();
         try {
             instance = executor.singleQuery(resultSet -> {

@@ -35,8 +35,9 @@ class TemplateTest {
     @SneakyThrows
     void setUp() {
         connection = new DataSourceH2().getConnection();
-        userTemplate = JDBCTemplateFactory.getInstance().getTemplateInstance(connection, User.class);
-        accountTemplate = JDBCTemplateFactory.getInstance().getTemplateInstance(connection, Account.class);
+        JDBCTemplateManager templateManager = new JDBCTemplateManager();
+        userTemplate = templateManager.getTemplateInstance(connection, User.class);
+        accountTemplate = templateManager.getTemplateInstance(connection, Account.class);
     }
 
     @Test

@@ -2,6 +2,8 @@ package tools;
 
 import lombok.SneakyThrows;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class QueryGenerator {
 
@@ -9,20 +11,13 @@ public class QueryGenerator {
         CREATE, SELECT, UPDATE, INSERT
     }
 
-    private static QueryGenerator instance;
-    private final Map<RequestType,Map<String,String>> cache = new HashMap<>();
+    private final Map<RequestType,Map<String,String>> cache = new HashMap<>(4);
 
-    private QueryGenerator() {
+    public QueryGenerator() {
         cache.put(RequestType.CREATE, new HashMap<>());
         cache.put(RequestType.SELECT, new HashMap<>());
         cache.put(RequestType.UPDATE, new HashMap<>());
         cache.put(RequestType.INSERT, new HashMap<>());
-    }
-
-    public static QueryGenerator getInstance() {
-        if (null == instance)
-            instance = new QueryGenerator();
-        return instance;
     }
 
     public String generateCreate(String tableName, String tableKey, Map<String, Class<?>> fields) {
@@ -42,13 +37,11 @@ public class QueryGenerator {
             fieldsBuilder.append(fieldName).append(" ").append(SQLHelper.getSqlTypeName(fields.get(fieldName)));
         }
 
-        query = new StringBuilder()
-                .append("CREATE TABLE IF NOT EXISTS ")
-                .append(tableName)
-                .append("(")
-                .append(fieldsBuilder)
-                .append(");")
-                .toString();
+        query = "CREATE TABLE IF NOT EXISTS " +
+                tableName +
+                "(" +
+                fieldsBuilder +
+                ");";
         putToCache(tableName,RequestType.CREATE,query);
         return query;
     }
@@ -61,28 +54,19 @@ public class QueryGenerator {
 
         if (null == fields) return "";
 
-        StringBuilder insertBuilder = new StringBuilder();
-        StringBuilder nameBuilder = new StringBuilder();
-        StringBuilder valueBuilder = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-        boolean appendCommon = false;
-        for (String field : fields) {
-            if (appendCommon) {
-                nameBuilder.append(",");
-                valueBuilder.append(",");
-            }
-            nameBuilder.append(field).append(" ");
-            valueBuilder.append("?");
-            appendCommon = true;
-        }
+        String fieldNames = String.join(", ", fields);
+        //String fieldNames = fields.stream().collect(Collectors.joining(", "));
+        String fieldValues = IntStream.range(0, fields.size()).mapToObj(i -> "?").collect(Collectors.joining(", "));
 
-        insertBuilder.append("INSERT INTO ").append(tableName).append(" ")
-                .append("(").append(nameBuilder).append(") ")
+        sb.append("INSERT INTO ").append(tableName).append(" ")
+                .append("(").append(fieldNames).append(") ")
                 .append("VALUES")
-                .append(" (").append(valueBuilder).append(")")
+                .append(" (").append(fieldValues).append(")")
                 .append(";");
 
-        query = insertBuilder.toString();
+        query = sb.toString();
         putToCache(tableName,RequestType.INSERT,query);
 
         return query;
@@ -98,21 +82,13 @@ public class QueryGenerator {
 
         if (null == fields || fields.size() == 0) return "";
 
-        StringBuilder updateBuilder = new StringBuilder();
-        updateBuilder.append("UPDATE ").append(tableName).append(" set ");
+        String settingValues= fields.stream().map(field -> field + "=" + "?").collect(Collectors.joining(", " ));
 
-        boolean appendCommon = false;
-        for (String field : fields) {
-            if (appendCommon)
-                updateBuilder.append(",");
-            updateBuilder.append(field).append("=").append("?");
-            appendCommon = true;
-        }
-
-        query = updateBuilder
-                .append(" WHERE ")
-                .append(tableKey).append("=").append("?")
-                .append(";").toString();
+        query = "UPDATE " + tableName +
+                " set " + settingValues +
+                " WHERE " +
+                tableKey + "=" + "?" +
+                ";";
         putToCache(tableName,RequestType.UPDATE,query);
 
         return query;
@@ -124,15 +100,13 @@ public class QueryGenerator {
         if ((query = getFromCache(tableName,RequestType.SELECT)) != null )
             return query;
 
-
         if (null == tableKey)
             return "";
 
-        query = new StringBuilder()
-                .append("SELECT * FROM ").append(tableName).append(" ")
-                .append("WHERE ")
-                .append(tableKey).append("=").append("?")
-                .append(";").toString();
+        query = "SELECT * FROM " + tableName + " " +
+                "WHERE " +
+                tableKey + "=" + "?" +
+                ";";
         putToCache(tableName,RequestType.SELECT,query);
 
         return query;
