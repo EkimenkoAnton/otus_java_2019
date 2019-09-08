@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +26,7 @@ class HibernateDBServiceTest {
     private DBService dbService;
     private User user;
 
-    public HibernateDBServiceTest() {
+    HibernateDBServiceTest() {
         Configuration configuration = new Configuration()
                 .configure(HIBERNATE_CONFIG);
         StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
@@ -133,7 +132,7 @@ class HibernateDBServiceTest {
         compareUsers(user,realUser);
     }
 
-    public void compareUsers(User expectedUser, User realUser){
+    void compareUsers(User expectedUser, User realUser){
         Assertions.assertEquals(expectedUser,realUser);
         Assertions.assertEquals(expectedUser.getAddress(),realUser.getAddress());
 
@@ -149,6 +148,6 @@ class HibernateDBServiceTest {
                     ++sameElementsCount;
             }
         }
-        Assertions.assertEquals(expectedPhones.size(),sameElementsCount);
+        assertEquals(expectedPhones.size(),sameElementsCount);
     }
 }

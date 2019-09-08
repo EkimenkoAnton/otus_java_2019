@@ -3,7 +3,6 @@ package executor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.UnknownEntityTypeException;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
