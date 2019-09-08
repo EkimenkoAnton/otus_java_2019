@@ -17,6 +17,7 @@
         <module>hw06-oop</module>
         <module>hw8-io</module>
         <module>hw09-executor</module>
+        <module>hw14-numsequence</module>
     </modules>
 
     <properties>
