@@ -13,7 +13,6 @@ import java.util.List;
 @Table(name = "user")
 public class User {
     @Id
-    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;

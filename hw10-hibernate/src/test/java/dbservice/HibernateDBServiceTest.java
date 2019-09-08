@@ -1,13 +1,20 @@
 package dbservice;
 
+import datasets.Account;
 import datasets.Address;
 import datasets.Phone;
 import datasets.User;
+import executor.Executor;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tools.ReflectionHelper;
+
 
 import java.util.List;
 
@@ -15,12 +22,33 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HibernateDBServiceTest {
 
-    DBService dbService;
-    User user;
+    private static final String HIBERNATE_CONFIG = "hibernate.cfg.xml";
+    private final SessionFactory sessionFactory;
+    private DBService dbService;
+    private User user;
+
+    public HibernateDBServiceTest() {
+        Configuration configuration = new Configuration()
+                .configure(HIBERNATE_CONFIG);
+        StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                .applySettings(configuration.getProperties())
+                .build();
+
+        Metadata metadata = new MetadataSources(serviceRegistry)
+                .addAnnotatedClass(Account.class)
+                .addAnnotatedClass(User.class)
+                .addAnnotatedClass(Address.class)
+                .addAnnotatedClass(Phone.class)
+                .getMetadataBuilder()
+                .build();
+        sessionFactory = metadata.getSessionFactoryBuilder().build();
+    }
 
     @BeforeEach
     void setUp() {
-        dbService = new HibernateDBService();
+
+        Executor executor = new Executor(sessionFactory);
+        dbService = new HibernateDBService(executor);
 
         user = new User();
         user.setAge(99);
@@ -51,9 +79,12 @@ class HibernateDBServiceTest {
 
     @Test
     void update() {
-        create();
+        dbService.create(user);
 
-        //user = new User();
+        User created = dbService.load(user.getId(), user.getClass());
+
+        compareUsers(user,created);
+
         user.setAge(66);
         user.setName("AnotherName");
 
@@ -70,9 +101,9 @@ class HibernateDBServiceTest {
         address.setUser(user);
 
         dbService.update(user);
-        User realUser = dbService.load(user.getId(), user.getClass());
+        User updated = dbService.load(user.getId(), user.getClass());
 
-        compareUsers(user,realUser);
+        compareUsers(user,updated);
     }
 
     @Test

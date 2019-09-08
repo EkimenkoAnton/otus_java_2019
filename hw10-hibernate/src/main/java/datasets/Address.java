@@ -11,12 +11,11 @@ import javax.persistence.*;
 @Table(name = "address")
 public class Address {
     @Id
-    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String street;
 
     @EqualsAndHashCode.Exclude @ToString.Exclude
     @OneToOne(optional = false, mappedBy = "address", fetch = FetchType.EAGER)
-    User user;
+    private User user;
 }

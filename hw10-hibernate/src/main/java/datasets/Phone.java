@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Table(name = "phone")
 public class Phone {
     @Id
-    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String number;
