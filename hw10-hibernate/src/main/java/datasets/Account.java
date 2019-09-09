@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Table(name = "account")
 public class Account {
     @Id
-    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long no;
     private String type;
