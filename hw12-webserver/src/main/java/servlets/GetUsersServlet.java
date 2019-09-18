@@ -6,18 +6,20 @@ import com.google.gson.Gson;
 import datasets.User;
 import dbservice.DBService;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class GetUsers extends HttpServlet {
+public class GetUsersServlet extends HttpServlet {
+
     private static final Gson gson = new Gson();
     private final DBService service;
     private final ExclusionStrategy exclusionStrategy;
 
-    public GetUsers(DBService service) {
+    public GetUsersServlet(DBService service) {
         this.service = service;
         exclusionStrategy = new ExclusionStrategy() {
             @Override
@@ -33,11 +35,11 @@ public class GetUsers extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.setStatus(HttpServletResponse.SC_OK);
-        PrintWriter printWriter = response.getWriter();
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        resp.addHeader("Access-Control-Allow-Origin", "*");
+        resp.setStatus(HttpServletResponse.SC_OK);
+        PrintWriter printWriter = resp.getWriter();
         printWriter.print(getUsers());
         printWriter.flush();
     }

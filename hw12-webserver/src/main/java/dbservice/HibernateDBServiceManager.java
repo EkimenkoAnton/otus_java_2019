@@ -36,7 +36,7 @@ public class HibernateDBServiceManager implements DBServiceManager {
         sessionFactory = metadata.getSessionFactoryBuilder().build();
     }
 
-    public DBService getHibernateDBService() {
+    public DBService getDBService() {
         if (null == hibernateDBService) {
             this.hibernateDBService = new HibernateDBService(
                     new Executor(sessionFactory)

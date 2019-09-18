@@ -1,5 +1,8 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dbservice.DBService;
+import dbservice.DBServiceManager;
+import dbservice.HibernateDBServiceManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.eclipse.jetty.server.Server;
@@ -29,14 +32,16 @@ class WebServerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        WebServer webServer = new WebServer();
-        this.server = (Server) ReflectionHelper.callMethod(webServer,"createServer",8080);
+        DBServiceManager hibernateDBServiceManager = new HibernateDBServiceManager();
+        DBService dbService = hibernateDBServiceManager.getDBService();
+
+        ServerManager serverManager = new ServerManager(dbService, 8080);
+        this.server = serverManager.getServer();
         this.server.start();
     }
 
     @Test
     void addUsers(){
-
         String expectedResult = "[{\"id\":1,\"name\":\"Ivan\",\"age\":99,\"address\":{\"id\":1,\"street\":\"NoName Street\"},\"phones\":[{\"id\":1,\"number\":\"911\"},{\"id\":2,\"number\":\"912\"}]}]";
         Gson gson = new Gson();
         Type type = new TypeToken<Map<String, Object>[]>(){}.getType();
@@ -52,7 +57,7 @@ class WebServerTest {
 
         executePost("http://localhost:8080/addUser", parameters);
 
-        String realResult = executePost("http://localhost:8080/getUsers", null);
+        String realResult = executeGet("http://localhost:8080/getUsers", null);
         System.out.println("------>  RESULT : "+realResult);
         Map<String, Object>[] realMap = gson.fromJson(realResult, type);
 
@@ -63,12 +68,20 @@ class WebServerTest {
     }
 
     String executePost(String targetURL, List<ParamEntity> urlParameters) {
+        return  executeRquest(targetURL, urlParameters, "POST");
+    }
+
+    String executeGet(String targetURL, List<ParamEntity> urlParameters) {
+        return  executeRquest(targetURL, urlParameters, "GET");
+    }
+
+    String executeRquest(String targetURL, List<ParamEntity> urlParameters, String requestType) {
         HttpURLConnection connection = null;
 
         try {
             URL url = new URL(targetURL);
             connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod(requestType);
 
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
             connection.setUseCaches(false);

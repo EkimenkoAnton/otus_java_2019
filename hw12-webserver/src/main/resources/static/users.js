@@ -21,7 +21,8 @@ $(document).ready(function(){
 		freezeButton(clickedButton);
 		setButtonName(clickedButton, "wait...");
 
-		let req = $.get("http://localhost:8080/getUsers");
+		//let req = $.get("http://localhost:8080/getUsers");
+		let req = $.get("./getUsers");
 		req.done(function( data ) {
 				$( "#dataHolder" ).empty().append( jsonToTable(data) );
 		});
@@ -102,60 +103,86 @@ $(document).ready(function(){
 	}
 
 	function jsonToTable(jsonData) {
-		let strBuilder="";
-		strBuilder=strBuilder+
-		'<table border="1"><caption>List of users</caption>'+
-		'<tr>'+
-			'<th>id</th>'+
-			'<th>name</th>'+
-			'<th>age</th>'+
-			'<th>adress</th>';
-			let maxPhoneCnt=0;
-			for (let i = 0; i < jsonData.length; i++) {
-				let tmpPhoneCnt = 0;
-			    for (let key in jsonData[i]) {
-			    	let val=jsonData[i][key];
-			    	if (Array.isArray(val)) {
-			    		for (let k = 0; k < val.length; k++) {
-			    			tmpPhoneCnt++;
-			    			if (tmpPhoneCnt>maxPhoneCnt)
-			    				strBuilder=strBuilder+'<th>phone</th>';
-			    		}
-			    	}
-			    }
-			    if (tmpPhoneCnt>maxPhoneCnt)
-			    	maxPhoneCnt = tmpPhoneCnt;
-			}
-			strBuilder=strBuilder+'</tr>';
+
+		let table = document.createElement("table");
+		let tr = table.insertRow(-1);
+
+		let maxColomnsRow = getRowHavingMaxColumns(jsonData);
+
+		createTableHeader(jsonData[maxColomnsRow], tr);
 
 		for (let i = 0; i < jsonData.length; i++) {
-			strBuilder=strBuilder+'<tr>';
-            for (let key in jsonData[i]) {
-            	let val=jsonData[i][key];
-            	if (Array.isArray(val)) {
-            		for (let k = 0; k < val.length; k++) {
-            			for (let innerKey in val[k]) {
-            				if(innerKey!=='id') {
-            					strBuilder=strBuilder+'<td>'+val[k][innerKey]+'</td>';
-            				}
-            			}
-            		}
-            	} else if (typeof val === "object") {
-            		for (let innerKey in val) {
-            			if(innerKey!=='id') {
-            				strBuilder=strBuilder+'<td>'+val[innerKey]+'</td>';
-            			}
-            		}
-            	} else {
-            		strBuilder=strBuilder+'<td>'+val+'</td>';
-            	}
-            }
-            strBuilder=strBuilder+'</tr>';
-        }
-
-        strBuilder=strBuilder+'</table>'
-        return strBuilder;
+			tr = table.insertRow(-1);
+			fillRowTable(jsonData[i], tr);
+		}
+		return table;
 	}
 
+	function fillRowTable(row, tr){
+        for (let key in row) {
+        	let val=row[key];
+        	if (Array.isArray(val)) {
+        		for (let k = 0; k < val.length; k++) {
+        			for (let innerKey in val[k]) {
+        				if(innerKey!=='id')
+        					appendTableCell(tr,val[k][innerKey]);
+        			}
+        		}
+        	} else if (typeof val === "object") {
+        		for (let innerKey in val) {
+        			if(innerKey!=='id')
+        				appendTableCell(tr,val[innerKey]);
+        		}
+        	} else
+        	appendTableCell(tr,val);
+        }
+	}
+
+	function createTableHeader(row, tr) {
+		for (let key in row) {
+        	let val=row[key];
+        	if (Array.isArray(val)) {
+        		for (let k = 0; k < val.length; k++) {
+        			for (let innerKey in val[k]) {
+        				if(innerKey!=='id')
+        					appendTableHerderCell(tr, innerKey);
+        			}
+        		}
+        	}
+        	else {
+        		appendTableHerderCell(tr, key);
+        	}
+        }
+	}
+
+	function getRowHavingMaxColumns(jsonData) {
+		let maxColumnsRow=0;
+		let maxRows = 0;
+		for (let i = 0; i < jsonData.length; i++) {
+			let tmpPhoneCnt = 0;
+		    for (let key in jsonData[i]) {
+		    	let val=jsonData[i][key];
+		    	if (Array.isArray(val))
+		    		tmpPhoneCnt+=val.length;
+		    	else tmpPhoneCnt++;
+		    }
+		    if (tmpPhoneCnt>maxRows) {
+		    	maxRows = tmpPhoneCnt;
+		    	maxColumnsRow = i;
+		    }
+		}
+		return maxColumnsRow;
+	}
+
+	function appendTableCell(tr, val){
+		let tabCell = tr.insertCell(-1);
+		tabCell.innerHTML = val;
+	}
+
+	function appendTableHerderCell(tr, val) {
+		var th = document.createElement("th");
+		th.innerHTML = val;
+		tr.appendChild(th);
+	}
 
 });
