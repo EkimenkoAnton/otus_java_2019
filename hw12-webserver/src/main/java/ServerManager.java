@@ -64,7 +64,7 @@ public class ServerManager {
         if (fileDir == null) {
             throw new RuntimeException("File Directory not found");
         }
-        
+
         resourceHandler.setResourceBase(URLDecoder.decode(fileDir.getPath(), StandardCharsets.UTF_8));
         return resourceHandler;
     }
