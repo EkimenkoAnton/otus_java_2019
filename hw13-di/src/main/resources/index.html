@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml" content="text/html;">
+  <head>
+    <meta charset="utf-8">
+    <title>STREAM UI</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <script src="resources/users.js"></script>
+
+  </head>
+  <body>
+    <form action="./addUser" method="post" id="adduserform">
+      <input type="text" class="input_field" name="username" placeholder="username" title="username" required="true" size="15">
+      <input type="text" class="input_field" name="age" placeholder="age" pattern="\d+" title="age" required=true size="7" >
+      <input type="text" class="input_field" name="address" placeholder="address" title="address" required="true" size="15">
+      <input type="text" class="input_field" name="phone[]" placeholder="phone" title="phone" required="true" size="15">
+     <input type="button" value="add phone" id="add_phone_btn" itle="add phone">
+      <input type="button" value="add user" id="add_user_btn" title="adds user">
+    </form>
+    <button id="get_users_btn">Получить пользоватлей</button>
+
+    <div id="dataHolder"></div>
+  </body>
+</html>
