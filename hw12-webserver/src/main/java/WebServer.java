@@ -4,7 +4,7 @@ import dbservice.HibernateDBServiceManager;
 import org.eclipse.jetty.server.Server;
 
 public class WebServer {
-    private final static int PORT = 8080;
+    private final static int PORT = 8090;
 
     public static void main(String[] args) throws Exception {
         new WebServer().start();
