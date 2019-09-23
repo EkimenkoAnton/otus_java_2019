@@ -17,6 +17,7 @@
         <module>hw06-oop</module>
         <module>hw8-io</module>
         <module>hw09-executor</module>
+        <module>hw10-hibernate</module>
         <module>hw12-webserver</module>
     </modules>
 
@@ -42,38 +43,45 @@
 
     <dependencyManagement>
         <dependencies>
+
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${com.google.guava.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${org.projectlombok.lombok.version}</version>
                 <scope>provided</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <version>${org.junit.jupiter.junit-jupiter-engine.version}</version>
                 <scope>test</scope>
             </dependency>
+
             <dependency>
                 <groupId>javax.json</groupId>
                 <artifactId>javax.json-api</artifactId>
                 <version>${javax.json.javax.json-api.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.glassfish</groupId>
                 <artifactId>javax.json</artifactId>
                 <version>${org.glassfish.javax.json.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${com.google.code.gson.gson.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
