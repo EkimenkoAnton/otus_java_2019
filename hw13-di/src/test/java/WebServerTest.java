@@ -4,21 +4,27 @@ import com.google.gson.reflect.TypeToken;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import org.h2.tools.Server;
-import org.junit.jupiter.api.AfterEach;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.otus.domain.Account;
+import ru.otus.domain.Address;
+import ru.otus.domain.Phone;
+import ru.otus.domain.User;
 import ru.otus.services.dbservice.DBService;
-import ru.otus.services.dbservicemanager.DBServiceManager;
-import ru.otus.services.dbservicemanager.HibernateDBServiceManager;
+import ru.otus.services.dbservice.HibernateDBService;
+import ru.otus.services.executor.Executor;
 
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -26,6 +32,7 @@ class WebServerTest {
 
     private static final Boolean BUILD_MODE = true;
     private static final String APP_URL = "http://localhost:8080/hw13di/";
+    private static final String HIBERNATE_CONFIG = "hibernate.cfg.xml";
 
     @AllArgsConstructor
     static class ParamEntity {
@@ -35,8 +42,23 @@ class WebServerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        DBServiceManager hibernateDBServiceManager = new HibernateDBServiceManager();
-        DBService dbService = hibernateDBServiceManager.getDBService();
+        org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration()
+                .configure(HIBERNATE_CONFIG);
+        StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                .applySettings(configuration.getProperties())
+                .build();
+
+        Metadata metadata = new MetadataSources(serviceRegistry)
+                .addAnnotatedClass(Account.class)
+                .addAnnotatedClass(Address.class)
+                .addAnnotatedClass(Phone.class)
+                .addAnnotatedClass(User.class)
+
+                .getMetadataBuilder()
+                .build();
+        SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
+        Executor executor = new Executor(sessionFactory);
+        DBService dbService = new HibernateDBService(executor);
     }
 
     @Test

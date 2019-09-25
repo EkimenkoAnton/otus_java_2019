@@ -3,9 +3,9 @@ package ru.otus.controllers;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.otus.domain.Address;
 import ru.otus.domain.Phone;
 import ru.otus.domain.User;
@@ -18,9 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 public class UserController extends HttpServlet {
 
     private final DBService service;
@@ -57,6 +59,12 @@ public class UserController extends HttpServlet {
         PrintWriter printWriter = resp.getWriter();
         printWriter.print(getUsersFromRepository());
         printWriter.flush();
+    }
+
+    //NOT USES, causes cyclic dependency from Phone to User
+    @GetMapping("/getUsers2")
+    private List<User> getUsers2() throws IOException {
+        return service.loadEntities(User.class);
     }
 
     @PostMapping("/addUser")
