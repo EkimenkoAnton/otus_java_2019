@@ -1,8 +1,5 @@
 package ru.otus.controllers;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +22,6 @@ import java.util.Map;
 public class UserController extends HttpServlet {
 
     private final DBService service;
-    private final ExclusionStrategy exclusionStrategy;
     private final ServletService servletService;
 
     private static final String USER_NAME_PARAM = "username";
@@ -34,36 +29,13 @@ public class UserController extends HttpServlet {
     private static final String USER_ADDRESS_PARAM = "address";
     private static final String USER_PHONES_PARAM = "phone[]";
 
-    private static final Gson gson = new Gson();
-
     public UserController(DBService service, ServletService servletService) {
         this.service = service;
         this.servletService = servletService;
-        exclusionStrategy = new ExclusionStrategy() {
-            @Override
-            public boolean shouldSkipField(FieldAttributes f) {
-                return f.getName().equalsIgnoreCase("user");
-            }
-
-            @Override
-            public boolean shouldSkipClass(Class<?> clazz) {
-                return false;
-            }
-        };
     }
 
     @GetMapping("/getUsers")
-    private void getUsers(HttpServletResponse resp) throws IOException {
-        servletService.setJsonType(resp);
-        servletService.setOK(resp);
-        PrintWriter printWriter = resp.getWriter();
-        printWriter.print(getUsersFromRepository());
-        printWriter.flush();
-    }
-
-    //NOT USES, causes cyclic dependency from Phone to User
-    @GetMapping("/getUsers2")
-    private List<User> getUsers2() throws IOException {
+    private List<User> getUsers() throws IOException {
         return service.loadEntities(User.class);
     }
 
@@ -89,11 +61,6 @@ public class UserController extends HttpServlet {
 
         service.create(user);
         servletService.setOK(resp);
-    }
-
-    private String getUsersFromRepository(){
-        return gson.newBuilder().addSerializationExclusionStrategy(exclusionStrategy).create()
-                .toJson(service.loadEntities(User.class));
     }
 
     private User createUser(String reqUserName, String reqAge, String reqAddress, String[] reqPhones) {

@@ -1,5 +1,6 @@
 package ru.otus.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,6 +16,7 @@ public class Address {
     private int id;
     private String street;
 
+    @JsonIgnore
     @EqualsAndHashCode.Exclude @ToString.Exclude
     @OneToOne(optional = false, mappedBy = "address", fetch = FetchType.EAGER)
     private User user;
